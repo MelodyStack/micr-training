@@ -13,9 +13,18 @@ PYTHON_BIN="${PYTHON_BIN:-python3}"
 
 echo "==> system packages"
 sudo apt-get update -qq
-sudo apt-get install -y -qq \
-    python3-venv python3-dev build-essential \
-    libglib2.0-0 fonts-dejavu-core
+sudo apt-get install -y -qq python3-venv python3-dev build-essential
+
+# OpenCV needs glib even in the headless build. Ubuntu 24.04 renamed the
+# package to libglib2.0-0t64 in the 64-bit time_t transition, so ask for
+# whichever one this release actually has rather than failing the whole script.
+for pkg in libglib2.0-0t64 libglib2.0-0; do
+    if sudo apt-get install -y -qq "$pkg" 2>/dev/null; then
+        echo "    glib: $pkg"
+        break
+    fi
+done
+sudo apt-get install -y -qq fonts-dejavu-core 2>/dev/null || true
 
 echo "==> virtualenv"
 "${PYTHON_BIN}" -m venv .venv

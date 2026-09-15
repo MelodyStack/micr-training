@@ -1,0 +1,58 @@
+{
+  "version": "v1",
+  "classes": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "amount",
+    "dash",
+    "onus",
+    "transit"
+  ],
+  "substitution": {
+    "0": "0",
+    "1": "1",
+    "2": "2",
+    "3": "3",
+    "4": "4",
+    "5": "5",
+    "6": "6",
+    "7": "7",
+    "8": "8",
+    "9": "9",
+    "amount": "A",
+    "dash": "D",
+    "onus": "O",
+    "transit": "T"
+  },
+  "input": {
+    "height": 48,
+    "width": 32,
+    "channels": 1,
+    "layout_tflite": "NHWC",
+    "layout_coreml": "NCHW",
+    "dtype": "float32",
+    "range": [
+      0.0,
+      1.0
+    ],
+    "note": "Normalisation ((x - 0.5) / 0.5) is baked into the model. Feed grayscale pixels divided by 255 and nothing else."
+  },
+  "output": {
+    "name": "logits",
+    "shape": [
+      1,
+      14
+    ],
+    "note": "raw logits, apply softmax for a confidence score"
+  },
+  "val_accuracy": 0.9964285714285714,
+  "trained_at": "2026-09-15T20:44:30.145838+00:00"
+}

@@ -26,6 +26,15 @@ for pkg in libglib2.0-0t64 libglib2.0-0; do
 done
 sudo apt-get install -y -qq fonts-dejavu-core 2>/dev/null || true
 
+# Belt and braces for OpenCV. We ask pip for opencv-python-headless, but part
+# of the TFLite export toolchain depends on the GUI build, and both unpack into
+# the same cv2/ directory -- so whichever installs last wins, and the GUI build
+# wants libGL. Installing these costs a few MB and removes the whole class of
+# "ImportError: libGL.so.1" failures, whichever build ends up on disk.
+sudo apt-get install -y -qq libgl1 libsm6 libxext6 libxrender1 2>/dev/null \
+    || sudo apt-get install -y -qq libgl1-mesa-glx libsm6 libxext6 libxrender1 2>/dev/null \
+    || echo "    warning: could not install libGL; headless OpenCV should still work"
+
 echo "==> virtualenv"
 "${PYTHON_BIN}" -m venv .venv
 # shellcheck disable=SC1091
@@ -51,6 +60,17 @@ pip install --quiet \
 echo "==> TFLite export toolchain"
 # tf_keras is required for the saved_model that fp16/int8 conversion needs.
 pip install --quiet tensorflow tf_keras onnx2tf onnx-graphsurgeon sng4onnx
+
+# onnx2tf depends on the GUI build of OpenCV, which lands on top of the
+# headless one installed above. Nothing here ever calls imshow, so put the
+# headless build back -- same API, no libGL needed.
+if python -c "import cv2" 2>/dev/null; then
+    :
+else
+    echo "==> restoring headless OpenCV"
+    pip uninstall -y -q opencv-python opencv-contrib-python 2>/dev/null || true
+    pip install --quiet --force-reinstall opencv-python-headless
+fi
 
 echo
 echo "==> verifying"

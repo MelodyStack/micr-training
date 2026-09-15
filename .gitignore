@@ -2,22 +2,54 @@
 __pycache__/
 *.pyc
 
-# Generated, large, and reproducible from the scripts. Do not commit.
+# --- generated, not tracked -------------------------------------------------
+#
+# The synthetic training set is 63,000 files / 73 MB and regenerates in about
+# two minutes, deterministically from the seed in dataset_meta.json. Cloning it
+# would be slower than rebuilding it, and git keeps every byte forever even if
+# it is deleted later. `python -m micr.build` recreates it byte for byte.
+#
+# What IS tracked is the font it is rendered from: 3.7 KB that expands into the
+# whole dataset. That is the training data, in its compressed form.
 dataset/
-models/
-export/
 debug/
 
-# Real check data. The photos carry customer PII -- names, addresses,
-# signatures -- and labels.txt carries the MICR lines, which is worse: a
-# routing number plus an account number is everything needed to originate an
-# ACH debit against that account. Neither goes in a repo. Only the template is
-# tracked. Back labels.txt up somewhere private; it is the one hand-written
-# artefact and regenerating the crops depends on it.
+# --- model artefacts, tracked -----------------------------------------------
+#
+# The training box is headless, so pushing the finished model back to the repo
+# is how it gets collected. Half a megabyte each.
+!models/
+!models/*.pth
+!models/*_training_report.json
+!models/*_test_real.json
+!export/
+!export/*.tflite
+!export/*.onnx
+!export/micr_labels.json
+!export/micr_labels.txt
+
+# ... but not the onnx2tf scratch directory.
+export/_onnx2tf_*/
+
+# --- real check data, never tracked -----------------------------------------
+#
+# The photos carry customer names, addresses and signatures. labels.txt carries
+# the MICR lines, and the cut crops encode glyph position in their filenames, so
+# the full line reassembles from a folder listing. A routing number plus an
+# account number is everything needed to originate an ACH debit against that
+# account, so none of it belongs in a repo -- least of all a public one.
+#
+# Real checks are NOT needed to train: the model learns from glyphs rendered
+# from the font. They only add a test_real accuracy number.
+#
+# Back labels.txt up somewhere private. It is the one hand-written artefact,
+# and regenerating the crops depends on it.
 checks/*
 !checks/labels.example.txt
 
-# Fonts are excluded by default -- a commercial E-13B licence usually forbids
+# --- fonts ------------------------------------------------------------------
+#
+# Excluded by default, since a commercial E-13B licence usually forbids
 # redistribution. The OFL build is the exception: SIL OFL 1.1 explicitly allows
 # bundling and redistribution, so it and its licence are tracked.
 fonts/*

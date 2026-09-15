@@ -8,6 +8,40 @@ Python is used **only** for training and conversion. Nothing here ships with
 the React Native app — the app gets two files: `micr_cnn_v1.tflite` and
 `micr_labels.json`.
 
+## On a headless Ubuntu box: one command, model pushed back
+
+```bash
+git clone https://github.com/MelodyStack/micr-training.git
+cd micr-training
+bash run_all.sh --push
+```
+
+Installs everything, builds the dataset, trains, exports `.tflite`, then commits
+the model back to this repo so you can collect it from GitHub rather than
+copying files off the server. Roughly 30–60 minutes on a CPU instance.
+
+Pushing needs a token, since a headless box has no browser to authenticate
+with. Create one at <https://github.com/settings/tokens> with `repo` scope:
+
+```bash
+export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
+bash run_all.sh --push
+```
+
+It is used for that push only and never written to disk. Without `--push` the
+model is simply left in `export/`.
+
+The model artefacts land in [`export/`](export/): `micr_cnn_v1.tflite` (the
+Android file), the fp16 and int8 builds, and `micr_labels.json`.
+
+**Real check photos are not needed to train.** The model learns from glyphs
+rendered from the E-13B font, both of which are in this repo. A model trained
+on synthetic data alone, having never seen a real crop, read all 32 glyphs of a
+real check correctly. Real checks only add a `test_real` accuracy number — and
+they are deliberately absent here, because they carry customer names,
+addresses, signatures and account numbers. If you have them locally, drop them
+in `checks/` and `run_all.sh` picks them up automatically.
+
 ## The whole thing in one command
 
 You add files to two folders. Everything else is generated.

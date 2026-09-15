@@ -1,7 +1,44 @@
+# --- environment ------------------------------------------------------------
 .venv/
+venv/
 __pycache__/
 *.pyc
+.DS_Store
 
-# Conversion scratch only.
-export/_onnx2tf_*/
+# --- generated, never tracked -----------------------------------------------
+#
+# The synthetic training set: 63,000 files / 73 MB. `python -m micr.build`
+# regenerates it in about two minutes, deterministically from the seed in
+# dataset_meta.json, so cloning it costs more than rebuilding it -- and git
+# would keep every byte forever, even after a delete.
+#
+# What IS tracked is fonts/E13B-OFL.ttf: 3.7 KB that expands into the whole
+# dataset. That is the training data, in its compressed form.
+dataset/
+
+# Annotated MICR bands written per check while segmenting. Diagnostic only,
+# regenerated on every build, and the full MICR line is legible in them.
 debug/
+
+# onnx2tf conversion scratch (saved_model, schema dumps, ~2 MB per export).
+export/_onnx2tf_*/
+
+# Local scratch.
+*.log
+nohup.out
+
+# --- deliberately NOT ignored -----------------------------------------------
+#
+# models/ and export/ are tracked. The training box is headless, so
+# `bash run_all.sh --push` committing the finished model back to this repo is
+# how it gets collected. The artefacts are about 0.5 MB each:
+#
+#   models/micr_cnn_v1.pth                     PyTorch checkpoint
+#   models/micr_cnn_v1_training_report.json    per-epoch history
+#   export/micr_cnn_v1.tflite                  the Android file
+#   export/micr_cnn_v1_fp16.tflite             half the size
+#   export/micr_cnn_v1_int8.tflite             smallest
+#   export/micr_labels.json                    class order for the app
+#
+# checks/ is tracked too: the photos and labels.txt are needed for the
+# test_real accuracy number and for mixing real crops into training.

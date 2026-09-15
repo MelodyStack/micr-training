@@ -76,9 +76,16 @@ def find_fonts(font_dir: Path) -> list[str]:
 
 
 def synth_signature(cfg: SynthConfig, train_per_class: int, val_per_class: int) -> dict:
-    """The settings that, if changed, invalidate the synthetic images on disk."""
+    """The settings that, if changed, invalidate the synthetic images on disk.
+
+    Fonts are compared by filename, not by full path. The dataset is committed
+    to the repo, and an absolute path never matches across machines -- a clone
+    on Linux would re-render all 56,000 images purely because the font now
+    lives at /home/ubuntu/... instead of D:\\Work\\..., which defeats the point
+    of shipping it.
+    """
     return {
-        "fonts": sorted(cfg.fonts),
+        "fonts": sorted(Path(f).name for f in cfg.fonts),
         "charmap": cfg.charmap,
         "train_per_class": train_per_class,
         "val_per_class": val_per_class,
@@ -103,7 +110,7 @@ def existing_signature(dataset_root: Path) -> dict | None:
     except (json.JSONDecodeError, KeyError, OSError):
         return None
     return {
-        "fonts": sorted(config["fonts"]),
+        "fonts": sorted(Path(f).name for f in config["fonts"]),
         "charmap": config["charmap"],
         "train_per_class": meta["train_per_class"],
         "val_per_class": meta["val_per_class"],

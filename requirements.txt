@@ -1,0 +1,33 @@
+# Training + data generation. Python is used only here; nothing ships in the app.
+#
+# CPU-only is fine for a 14-class problem on 48x32 crops. For CUDA, install
+# torch from https://pytorch.org/get-started/locally/ first, then this file.
+torch>=2.2
+torchvision>=0.18          # allow_empty= on ImageFolder (test_real has empty classes)
+numpy>=1.26
+pillow>=10.0
+fonttools>=4.50            # probing the E-13B font's cmap
+opencv-python>=4.9
+albumentations>=2.0        # 1.x renamed args; the pipelines here use the 2.x API
+onnx>=1.16
+onnxruntime>=1.17          # ONNX parity check
+onnxsim>=0.4.36            # optional graph simplification
+
+# --- export to TFLite -------------------------------------------------------
+# Heavier than the rest, and tf_keras is not optional despite the name: onnx2tf
+# needs it to emit the saved_model that the fp16 and int8 conversions are built
+# from. Without it you still get a working float32 .tflite.
+#
+# pip install tensorflow tf_keras onnx2tf onnx-graphsurgeon sng4onnx
+#
+# If tensorflow will not install on this machine, run
+#   python -m micr.export --onnx-only
+# and finish the conversion on WSL, Linux or Colab. The .onnx is portable.
+#
+# --- iOS, later -------------------------------------------------------------
+# pip install coremltools
+
+# Verified end to end on Windows 10 / Python 3.12 with:
+#   torch 2.14.0+cpu  torchvision 0.29.0  albumentations 2.0.8  opencv 5.0.0
+#   onnx 1.22.0  onnxruntime 1.30.0  onnxsim 0.6.5
+#   tensorflow 2.21.0  tf_keras 2.21.0  onnx2tf 2.6.9

@@ -1,0 +1,12 @@
+# Keep LF in the repository. The training box is Ubuntu, and setup_ubuntu.sh
+# fails with a confusing "bad interpreter" error if it arrives with CRLF.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ttf binary
+*.otf binary
+*.tflite binary
+*.pth binary
+*.onnx binary

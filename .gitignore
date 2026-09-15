@@ -1,0 +1,28 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Generated, large, and reproducible from the scripts. Do not commit.
+dataset/
+models/
+export/
+debug/
+
+# Real check data. The photos carry customer PII -- names, addresses,
+# signatures -- and labels.txt carries the MICR lines, which is worse: a
+# routing number plus an account number is everything needed to originate an
+# ACH debit against that account. Neither goes in a repo. Only the template is
+# tracked. Back labels.txt up somewhere private; it is the one hand-written
+# artefact and regenerating the crops depends on it.
+checks/*
+!checks/labels.example.txt
+
+# Fonts are excluded by default -- a commercial E-13B licence usually forbids
+# redistribution. The OFL build is the exception: SIL OFL 1.1 explicitly allows
+# bundling and redistribution, so it and its licence are tracked.
+fonts/*
+!fonts/README.md
+!fonts/E13B-OFL.ttf
+!fonts/E13B-OFL.LICENSE.md
+!fonts/E13B-OFL.UPSTREAM-README.md
+!fonts/E13B-OFL.svgs/

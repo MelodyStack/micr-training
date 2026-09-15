@@ -1,0 +1,28 @@
+# Copy this to labels.txt and fill it in. labels.txt is gitignored on purpose:
+# a routing number plus an account number is everything needed to originate an
+# ACH debit, so real MICR lines must never reach a repo.
+#
+# One line per check photo in this folder:
+#
+#     <check id>  <MICR line>
+#
+# The check id is the image filename without its extension, so chk001.jpg is
+# labelled by the line starting "chk001". Ids cannot contain spaces -- use
+# `python -m micr.ingest --from <folder>` to copy photos in under clean ids.
+#
+# Read the bottom band of the check left to right and substitute the symbols:
+#
+#     T = transit  (around the routing number)
+#     A = amount   (rare on personal checks)
+#     O = on-us    (around the account / check number)
+#     D = dash
+#
+# Spaces separate fields and are ignored. Type exactly what is printed in the
+# band -- including leading zeros, and NOT a routing number printed elsewhere
+# on the check. Checks often show a different ACH routing number above the
+# band; they are not interchangeable.
+#
+# Nothing is written for a check whose glyph count does not match its line, so
+# a typo here is reported rather than silently baked into the dataset.
+
+chk001  O001234O T123456780T 000123456789O
